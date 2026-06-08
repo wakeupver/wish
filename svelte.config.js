@@ -19,14 +19,7 @@ const config = {
 			base: basePath
 		},
 		prerender: {
-			handleHttpError: ({ path, message }) => {
-				// Abaikan static assets yang tidak pakai base path
-				if (path.endsWith('.css') || path.endsWith('.js') || path.endsWith('.png') || path.endsWith('.woff2')) {
-					console.warn(`[prerender] warning: ${message}`);
-					return;
-				}
-				throw new Error(message);
-			}
+			handleHttpError: 'warn'
 		},
 		alias: {
 			$post: path.resolve('./src/post')
