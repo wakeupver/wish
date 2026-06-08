@@ -1,19 +1,28 @@
 import path from 'path';
-import adapter from '@sveltejs/adapter-static';
 import preprocess from 'svelte-preprocess';
 
 const basePath = process.env.BASE_PATH || '';
+
+// Custom inline adapter - compatible dengan kit@1.0.0-next.x
+const staticAdapter = {
+	name: 'adapter-static-custom',
+	async adapt(builder) {
+		const outDir = 'build';
+		builder.writeClient(outDir);
+		if (typeof builder.writePrerendered === 'function') {
+			builder.writePrerendered(outDir);
+		}
+		if (typeof builder.writeStatic === 'function') {
+			builder.writeStatic(outDir);
+		}
+	}
+};
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	kit: {
 		appDir: 'internal',
-		adapter: adapter({
-			pages: 'build',
-			assets: 'build',
-			precompress: false,
-			strict: false
-		}),
+		adapter: staticAdapter,
 		paths: {
 			base: basePath
 		},
