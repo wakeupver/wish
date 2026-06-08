@@ -2,8 +2,6 @@ import path from 'path';
 import adapter from '@sveltejs/adapter-static';
 import preprocess from 'svelte-preprocess';
 
-// BASE_PATH diisi otomatis oleh GitHub Actions saat build
-// Contoh: '/repo-name' untuk project page, '' untuk user page (username.github.io)
 const basePath = process.env.BASE_PATH || '';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -19,6 +17,16 @@ const config = {
 		}),
 		paths: {
 			base: basePath
+		},
+		prerender: {
+			handleHttpError: ({ path, message }) => {
+				// Abaikan static assets yang tidak pakai base path
+				if (path.endsWith('.css') || path.endsWith('.js') || path.endsWith('.png') || path.endsWith('.woff2')) {
+					console.warn(`[prerender] warning: ${message}`);
+					return;
+				}
+				throw new Error(message);
+			}
 		},
 		alias: {
 			$post: path.resolve('./src/post')
